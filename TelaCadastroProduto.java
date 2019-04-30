@@ -3,6 +3,7 @@ package principal;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,17 +16,18 @@ import javax.swing.event.AncestorListener;
 
 import dao.ProdutoDAO;
 
-public class TelaCadastroProduto extends JDialog implements ActionListener{
-	
+@SuppressWarnings({ "unused", "serial" })
+public class TelaCadastroProduto extends JDialog implements ActionListener {
+
 	JLabel labelNome, labelValor;
 	JTextField entradaNome, entradaValor;
-	JButton botaoCancelar, botaoCadastrar;
+	JButton botaoCancelar, botaoCadastrar,botaoEditar;
 	TelaProduto telaProduto;
-	
-	public TelaCadastroProduto (JFrame frame) {
-		super(frame,true);
-		telaProduto =(TelaProduto) frame;
-		setSize(frame.getWidth(),frame.getHeight()-300);
+
+	public TelaCadastroProduto(JFrame frame) {
+		super(frame, true);
+		telaProduto = (TelaProduto) frame;
+		setSize(frame.getWidth(), frame.getHeight() - 300);
 		setLayout(null);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -33,74 +35,75 @@ public class TelaCadastroProduto extends JDialog implements ActionListener{
 		setTitle("Cadastro Produtos");
 		Init();
 		setVisible(true);
-		
+
 	}
 
+
+
 	private void Init() {
-		
+
 		labelNome = new JLabel();
-		labelNome.setBounds(25, 25, getWidth()-40, 45);
-		labelNome.setText("Produto : ");		
+		labelNome.setBounds(25, 15, getWidth() - 40, 25);
+		labelNome.setText("Produto : ");
 		add(labelNome);
-		
+
 		entradaNome = new JTextField();
-		entradaNome.setBounds(labelNome.getX(),labelNome.getY()+
-				labelNome.getHeight()+10, labelNome.getWidth(),labelNome.getHeight());
+		entradaNome.setBounds(labelNome.getX(), labelNome.getY() + labelNome.getHeight() + 10, labelNome.getWidth(),
+				labelNome.getHeight());
 		add(entradaNome);
-		
+
 		labelValor = new JLabel();
-		labelValor.setBounds(entradaNome.getX(), entradaNome.getY() + 
-				entradaNome.getHeight()+10, entradaNome.getWidth(),entradaNome.getHeight());
+		labelValor.setBounds(entradaNome.getX(), entradaNome.getY() + entradaNome.getHeight() + 10,
+				entradaNome.getWidth(), entradaNome.getHeight());
 		labelValor.setText("Valor R$ : ");
 		add(labelValor);
-		
+
 		entradaValor = new JTextField();
-		entradaValor.setBounds(labelValor.getX(),labelValor.getY()+
-				labelValor.getHeight(), labelValor.getWidth(),labelValor.getHeight());
+		entradaValor.setBounds(labelValor.getX(), labelValor.getY() + labelValor.getHeight(), labelValor.getWidth(),
+				labelValor.getHeight());
 		add(entradaValor);
-		
+
 		botaoCancelar = new JButton();
 		botaoCancelar.setText("CANCELAR");
-		botaoCancelar.setBounds(entradaValor.getX()+80, entradaValor.getY()+ entradaValor.getHeight()+20
-				,entradaValor.getWidth()/4, entradaValor.getHeight());
+		botaoCancelar.setBounds(entradaValor.getX() + 80, entradaValor.getY() + entradaValor.getHeight() + 60,
+				entradaValor.getWidth() / 4, entradaValor.getHeight());
 		add(botaoCancelar);
-		
+
 		botaoCadastrar = new JButton();
 		botaoCadastrar.setText("CADASTRAR");
-		botaoCadastrar.setBounds(botaoCancelar.getX()+botaoCancelar.getWidth()+50,botaoCancelar.getY(),
+		botaoCadastrar.setBounds(botaoCancelar.getX() + botaoCancelar.getWidth() + 50, botaoCancelar.getY(),
 				botaoCancelar.getWidth(), botaoCancelar.getHeight());
-		add(botaoCadastrar);	
-		
+		add(botaoCadastrar);
+
 		botaoCadastrar.addActionListener(this);
-		botaoCancelar.addActionListener(this);		
-		
+		botaoCancelar.addActionListener(this);
+
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg) {
 		if (arg.getSource().equals(botaoCadastrar)) {
 			Produto proCadastrar = new Produto();
-			
+
 			proCadastrar.setNomeProduto(entradaNome.getText());
-			proCadastrar.setPrecoProduto(Double.parseDouble(entradaValor.getText().replace("," , ".")));
+			proCadastrar.setPrecoProduto(Double.parseDouble(entradaValor.getText().replace(",", ".")));
+			Random random = new Random();
+			proCadastrar.setCodigoProduto(random.nextInt(1000));
 			ProdutoDAO produtoDAO = new ProdutoDAO();
-			
+
 			if (produtoDAO.cadastrar(proCadastrar)) {
-				JOptionPane.showMessageDialog(null,"Cadastrado com sucesso");
-				
-			}
-			else  {
-				JOptionPane.showMessageDialog(null,"Erro ao cadastrar");
+				JOptionPane.showMessageDialog(null, "Cadastrado com sucesso");
+
+			} else {
+				JOptionPane.showMessageDialog(null, "Erro ao cadastrar");
 			}
 			dispose();
 		}
-		
+
 		else if (arg.getSource().equals(botaoCancelar)) {
 			dispose();
 		}
-		
-	}
 
-	
+	}
 
 }

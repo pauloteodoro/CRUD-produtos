@@ -11,13 +11,17 @@ public class Repositorio {
 	
 	private Repositorio(){
 		produtos = new ArrayList<Produto>();
+		
 	}
+	
+	
+	
 	
 	public static Repositorio getInstance(){
 		if(repositorio== null){
-			repositorio =
-					new Repositorio();
+			repositorio = new Repositorio();
 		}
+		
 		return repositorio;
 	}
 	

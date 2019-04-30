@@ -1,18 +1,25 @@
 package principal;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import dao.ProdutoDAO;
 
-public class TelaProduto extends JFrame implements ActionListener {
+@SuppressWarnings({ "serial", "unused" })
+public class TelaProduto extends JFrame implements ActionListener, KeyListener, MouseListener {
 
 	public TelaProduto() {
 
@@ -29,23 +36,26 @@ public class TelaProduto extends JFrame implements ActionListener {
 	JTextField barraPesquisa;
 	JButton botaoSair, botaoCadastrar, botaoEditar, botaoRemover;
 	JList<Produto> listaProdutos;
+	int indice =-1;
 
 	private void Inicializar() {
-
 		barraPesquisa = new JTextField();
 		barraPesquisa.setBounds(25, 25, getWidth() - 55, 45);
+		barraPesquisa.setFont(new Font("monospaced", Font.PLAIN, 20));
 		add(barraPesquisa);
+		int remover;
 
 		listaProdutos = new JList<Produto>();
 		listaProdutos.setBounds(barraPesquisa.getX(), barraPesquisa.getY() + barraPesquisa.getHeight() + 20,
 				barraPesquisa.getWidth(), 400);
+		listaProdutos.setFont(new Font("monospaced", Font.PLAIN, 20));
 
 		add(listaProdutos);
 
 		botaoSair = new JButton();
 		botaoSair.setText("SAIR");
 		botaoSair.setBounds(listaProdutos.getX(), listaProdutos.getY() + listaProdutos.getHeight() + 40,
-				listaProdutos.getWidth() / 4 - 7, barraPesquisa.getHeight());
+				listaProdutos.getWidth() / 4 - 7, barraPesquisa.getHeight() - 20);
 
 		add(botaoSair);
 
@@ -72,7 +82,10 @@ public class TelaProduto extends JFrame implements ActionListener {
 
 		botaoCadastrar.addActionListener(this);
 		botaoSair.addActionListener(this);
-
+		botaoEditar.addActionListener(this);
+		barraPesquisa.addKeyListener(this);
+		listaProdutos.addMouseListener(this);
+		botaoRemover.addActionListener(this);
 	}
 
 	@Override
@@ -82,6 +95,37 @@ public class TelaProduto extends JFrame implements ActionListener {
 		} else if (arg.getSource().equals(botaoCadastrar)) {
 			new TelaCadastroProduto(this);
 			atualizarListaProdutos();
+		} else if (arg.getSource().equals(botaoEditar)) {
+
+			if (indice == -1) {
+				JOptionPane.showMessageDialog(null, "Nenhum produto cadastrado");
+			} else {
+				
+				@SuppressWarnings("unused")
+				EditarClickMouse editar = new EditarClickMouse(this, indice);
+			}
+			atualizarListaProdutos();
+
+		} else if (arg.getSource().equals(botaoRemover)) {
+
+			if (indice == -1) {
+				JOptionPane.showMessageDialog(null, "Nenhum produto cadastrado");
+			} else {
+
+				int remover = JOptionPane.showConfirmDialog(null, "Deletar Item ?");
+
+				if (remover == JOptionPane.YES_NO_OPTION) {
+					@SuppressWarnings("unused")
+					Produto proCadastrar = new Produto();
+					ProdutoDAO produtoDAO = new ProdutoDAO();
+					produtoDAO.cadastrar(indice);
+					JOptionPane.showMessageDialog(null, " Excluido com sucesso !");
+				}
+				
+
+			}
+			atualizarListaProdutos();
+
 		}
 
 	}
@@ -95,8 +139,73 @@ public class TelaProduto extends JFrame implements ActionListener {
 
 		listaProdutos.setModel(modelo);
 	}
-	
-	
-	
+
+	private void atualizarListaProdutos(String nome) {
+		ArrayList<Produto> produtos = new ProdutoDAO().listarByNome(nome);
+		DefaultListModel<Produto> modelo = new DefaultListModel<Produto>();
+		for (Produto p : produtos) {
+			modelo.addElement(p);
+		}
+
+		listaProdutos.setModel(modelo);
+	}
+
+	public void pesquisaPeloNome() {
+		String texto = barraPesquisa.getText().trim();
+		if (texto.length() == 0) {
+			atualizarListaProdutos();
+		} else {
+			atualizarListaProdutos(texto);
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		pesquisaPeloNome();
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		pesquisaPeloNome();
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseClicked(java.awt.event.MouseEvent arg0) {
+
+		indice = listaProdutos.getSelectedIndex();
+
+	}
+
+	@Override
+	public void mouseEntered(java.awt.event.MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(java.awt.event.MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(java.awt.event.MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(java.awt.event.MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
